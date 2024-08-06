@@ -30,12 +30,7 @@ extras_require = {
     "kubernetes": [
         "kubernetes>=22.0.0,<23.0.0",
     ],
-    "yadage": [
-        "adage~=0.11.0",
-        "yadage~=0.20.1",
-        "yadage-schemas~=0.10.6",
-        "jsonschema<4.10.0",  # see https://github.com/yadage/yadage-schemas/issues/38
-    ],
+    "yadage": ["adage~=0.10.1", "yadage~=0.20.1", "yadage-schemas~=0.10.6"],
     "cwl": ["cwltool==3.1.20210628163208"],
     "snakemake": [
         # install patched version of snakemake v7 that works with Python 3.12
