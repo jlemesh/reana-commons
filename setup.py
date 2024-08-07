@@ -69,6 +69,7 @@ install_requires = [
     "PyYAML>=5.1,<7.0",
     "Werkzeug>=0.14.1",
     "wcmatch>=8.3,<8.5",
+    "python-redis-cache==4.0.0",
 ]
 
 packages = find_packages()
