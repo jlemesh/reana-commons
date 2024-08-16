@@ -78,6 +78,7 @@ install_requires = [
     "Werkzeug>=0.14.1",
     "wcmatch>=8.3,<8.5",
     "python-redis-cache==4.0.0",
+    "opensearch-py>=2.6.0,<2.7.0",
 ]
 
 packages = find_packages()

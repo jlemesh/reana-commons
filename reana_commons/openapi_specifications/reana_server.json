@@ -2,15 +2,11 @@
   "info": {
     "description": "Submit workflows to be run on REANA Cloud",
     "title": "REANA Server",
-    "version": "0.9.1a3"
+    "version": "0.95.0a1"
   },
   "paths": {
     "/account/settings/linkedaccounts/": {},
     "/account/settings/linkedaccounts/static/{filename}": {},
-    "/account/settings/login": {},
-    "/account/settings/security/": {},
-    "/account/settings/sessions/revoke/": {},
-    "/account/settings/static/{filename}": {},
     "/api/config": {
       "get": {
         "description": "This resource provides configuration needed by Reana-UI.",
@@ -148,12 +144,87 @@
       "get": {
         "description": "Retrieve projects from GitLab.",
         "operationId": "gitlab_projects",
+        "parameters": [
+          {
+            "description": "The API access_token of the current user.",
+            "in": "query",
+            "name": "access_token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The search string to filter the project list.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Results page number (pagination).",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Number of results per page (pagination).",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "type": "integer"
+          }
+        ],
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "This resource return all projects owned by the user on GitLab in JSON format."
+            "description": "This resource return all projects owned by the user on GitLab in JSON format.",
+            "schema": {
+              "properties": {
+                "has_next": {
+                  "type": "boolean"
+                },
+                "has_prev": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "properties": {
+                      "hook_id": {
+                        "type": "integer",
+                        "x-nullable": true
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "page": {
+                  "type": "integer"
+                },
+                "size": {
+                  "type": "integer"
+                },
+                "total": {
+                  "type": "integer",
+                  "x-nullable": true
+                }
+              },
+              "type": "object"
+            }
           },
           "403": {
             "description": "Request failed. User token not valid.",
@@ -2288,6 +2359,133 @@
           }
         },
         "summary": "Get disk usage of a workflow."
+      }
+    },
+    "/api/workflows/{workflow_id_or_name}/job/{job_id}/logs": {
+      "get": {
+        "description": "This resource reports the status of a workflow. Resource is expecting a workflow UUID.",
+        "operationId": "get_job_logs",
+        "parameters": [
+          {
+            "description": "API access_token of workflow owner.",
+            "in": "query",
+            "name": "access_token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Required. Analysis UUID or name.",
+            "in": "path",
+            "name": "workflow_id_or_name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Required. Job UUID or name.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request succeeded. Info about workflow, including the status is returned.",
+            "examples": {
+              "application/json": {
+                "job_id": "256b25f4-4cfb-4684-b7a8-73872ef455a1",
+                "job_name": "mytest-1",
+                "logs": "string",
+                "user": "00000000-0000-0000-0000-000000000000"
+              }
+            },
+            "schema": {
+              "properties": {
+                "job_id": {
+                  "type": "string"
+                },
+                "job_name": {
+                  "type": "string"
+                },
+                "logs": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Request failed. The incoming data specification seems malformed.",
+            "examples": {
+              "application/json": {
+                "message": "Malformed request."
+              }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "403": {
+            "description": "Request failed. User is not allowed to access workflow.",
+            "examples": {
+              "application/json": {
+                "message": "User 00000000-0000-0000-0000-000000000000 is not allowed to access workflow 256b25f4-4cfb-4684-b7a8-73872ef455a1"
+              }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Request failed. User does not exist.",
+            "examples": {
+              "application/json": {
+                "message": "Workflow cdcf48b1-c2f3-4693-8230-b066e088c6ac does not exist"
+              }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "500": {
+            "description": "Request failed. Internal controller error.",
+            "examples": {
+              "application/json": {
+                "message": "Internal controller error."
+              }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "summary": "Get job logs of a workflow."
       }
     },
     "/api/workflows/{workflow_id_or_name}/logs": {
@@ -4468,6 +4666,7 @@
     "/oauth/disconnect/{remote_app}/": {},
     "/oauth/login": {},
     "/oauth/login/{remote_app}/": {},
+    "/oauth/logout": {},
     "/oauth/signup/{remote_app}/": {},
     "/oauth/static/{filename}": {},
     "/signin": {},
