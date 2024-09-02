@@ -2,7 +2,7 @@
   "info": {
     "description": "Submit and manage workflows",
     "title": "REANA Workflow Controller",
-    "version": "0.9.1a2"
+    "version": "0.95.0a1"
   },
   "paths": {
     "/api/workflows": {
@@ -1453,7 +1453,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Requests succeeded. The file has been downloaded.",
+            "description": "Request succeeded. Details about deleted files and failed deletions are returned.",
             "schema": {
               "type": "file"
             }
@@ -1545,6 +1545,81 @@
           }
         },
         "summary": "Returns the requested file."
+      }
+    },
+    "/api/workflows/{workflow_id}/job/{job_id}/log": {
+      "get": {
+        "description": "This resource is expecting a workflow UUID and a filename to return its outputs.",
+        "operationId": "get_job_log",
+        "parameters": [
+          {
+            "description": "Required. Workflow UUID or name.",
+            "in": "path",
+            "name": "workflow_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Required. Workflow UUID or name.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request succeeded. Info about workflow, including the status is returned.",
+            "examples": {
+              "application/json": {
+                "job_id": "256b25f4-4cfb-4684-b7a8-73872ef455a1",
+                "job_name": "mytest-1",
+                "logs": "string",
+                "user": "00000000-0000-0000-0000-000000000000"
+              }
+            },
+            "schema": {
+              "properties": {
+                "job_id": {
+                  "type": "string"
+                },
+                "job_name": {
+                  "type": "string"
+                },
+                "logs": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Request failed. The incoming data specification seems malformed."
+          },
+          "404": {
+            "description": "Request failed. User does not exist.",
+            "examples": {
+              "application/json": {
+                "message": "User 00000000-0000-0000-0000-000000000000 does not exist"
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed. Internal controller error.",
+            "examples": {
+              "application/json": {
+                "message": "Internal workflow controller error."
+              }
+            }
+          }
+        },
+        "summary": "Returns logs of a specific workflow from a workflow engine."
       }
     }
   },

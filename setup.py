@@ -49,6 +49,9 @@ extras_require = {
         "snakemake[reports] @ git+https://github.com/mdonadoni/snakemake.git@cea31624976989ad0645eb2e1751260d32259506",  # branch `7.32.4-python3.12`
         "pulp>=2.7.0,<2.8.0",
     ],
+    "opensearch": [
+        "opensearch-py>=2.6.0,<2.7.0",
+    ],
 }
 
 # backwards compatibility with extras before PEP 685
@@ -74,6 +77,8 @@ install_requires = [
     "PyYAML>=5.1,<7.0",
     "Werkzeug>=0.14.1",
     "wcmatch>=8.3,<8.5",
+    "python-redis-cache==4.0.0",
+    "opensearch-py>=2.6.0,<2.7.0",
 ]
 
 packages = find_packages()
